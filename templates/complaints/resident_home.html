@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Resident Home</h1>
+<div class="metric-grid">
+  <div class="metric"><span>Open</span><strong>{{ counts.open }}</strong></div>
+  <div class="metric"><span>In Progress</span><strong>{{ counts.in_progress }}</strong></div>
+  <div class="metric"><span>Resolved</span><strong>{{ counts.resolved }}</strong></div>
+</div>
+<div class="d-flex gap-2 my-3">
+  <a class="btn btn-primary" href="{% url 'create_complaint' %}">Raise Complaint</a>
+  <a class="btn btn-outline-primary" href="{% url 'my_complaints' %}">My Complaints</a>
+</div>
+<h2>Latest Notices</h2>
+{% for notice in notices %}
+  <article class="panel mb-2">
+    <div class="d-flex justify-content-between"><h3>{{ notice.title }}</h3>{% if notice.important %}<span class="badge text-bg-warning">Important</span>{% endif %}</div>
+    <p>{{ notice.body }}</p>
+  </article>
+{% empty %}
+  <p>No notices yet.</p>
+{% endfor %}
+{% endblock %}

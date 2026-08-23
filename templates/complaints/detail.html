@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h1>{{ complaint.code }}</h1>
+    <p class="text-muted">{{ complaint.category }} by {{ complaint.resident.get_full_name|default:complaint.resident.email }}</p>
+  </div>
+  {% if complaint.is_overdue %}<span class="badge text-bg-warning">Overdue</span>{% endif %}
+</div>
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="panel">
+      <h2>Description</h2>
+      <p>{{ complaint.description }}</p>
+      {% if complaint.image %}<img class="complaint-img" src="{{ complaint.image.url }}" alt="Complaint image">{% endif %}
+    </div>
+    <div class="panel mt-3">
+      <h2>Status History</h2>
+      {% for item in complaint.history.all %}
+        <div class="history-item">
+          <b>{{ item.get_new_status_display|default:item.new_status }}</b>
+          <span>{{ item.timestamp|date:"d M Y, h:i A" }}</span>
+          {% if item.note %}<p>{{ item.note }}</p>{% endif %}
+        </div>
+      {% empty %}
+        <p>No history yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="panel">
+      <h2>Current Status</h2>
+      <p>Status: <b>{{ complaint.get_status_display }}</b></p>
+      <p>Priority: <b>{{ complaint.get_priority_display }}</b></p>
+      <p>Deadline: <b>{% if complaint.deadline %}{{ complaint.deadline }}{% else %}-{% endif %}</b></p>
+      {% if user.profile.role == "admin" %}
+      <form method="post" action="{% url 'update_complaint' complaint.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary">Update complaint</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

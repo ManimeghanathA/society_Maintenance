@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Complaints</h1>
+<form method="get" class="filter-bar">
+  <input class="form-control" name="search" value="{{ request.GET.search }}" placeholder="Search ID, category, resident">
+  <select class="form-select" name="category">
+    <option value="">All categories</option>
+    {% for value,label in categories %}<option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <select class="form-select" name="status">
+    <option value="">All statuses</option>
+    {% for value,label in statuses %}<option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <input class="form-control" type="week" name="week" value="{{ request.GET.week }}">
+  <select class="form-select" name="overdue">
+    <option value="">All due dates</option>
+    <option value="1" {% if request.GET.overdue %}selected{% endif %}>Overdue only</option>
+  </select>
+  <select class="form-select" name="sort">
+    <option value="overdue">Overdue first</option>
+    <option value="priority_high" {% if request.GET.sort == "priority_high" %}selected{% endif %}>High priority first</option>
+    <option value="priority_medium" {% if request.GET.sort == "priority_medium" %}selected{% endif %}>Medium priority first</option>
+    <option value="priority_low" {% if request.GET.sort == "priority_low" %}selected{% endif %}>Low priority first</option>
+    <option value="new" {% if request.GET.sort == "new" %}selected{% endif %}>New complaints</option>
+    <option value="old" {% if request.GET.sort == "old" %}selected{% endif %}>Old complaints</option>
+  </select>
+  <button class="btn btn-primary">Apply</button>
+</form>
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>ID</th><th>Resident</th><th>Category</th><th>Status</th><th>Priority</th><th>Deadline</th><th></th></tr></thead>
+    <tbody>
+      {% for complaint in complaints %}
+      <tr class="{% if complaint.is_overdue %}table-warning{% endif %}">
+        <td>{{ complaint.code }}</td>
+        <td>{{ complaint.resident.get_full_name|default:complaint.resident.email }}</td>
+        <td>{{ complaint.category }}</td>
+        <td>{{ complaint.get_status_display }}</td>
+        <td>{{ complaint.get_priority_display }}</td>
+        <td>{% if complaint.deadline %}{{ complaint.deadline }}{% else %}-{% endif %}</td>
+        <td><a class="btn btn-sm btn-outline-primary" href="{% url 'complaint_detail' complaint.id %}">Manage</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No complaints match the filters.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

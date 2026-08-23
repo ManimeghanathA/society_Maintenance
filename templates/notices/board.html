@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Notice Board</h1>
+{% for notice in notices %}
+  <article class="panel mb-3 {% if notice.important %}important{% endif %}">
+    <div class="d-flex justify-content-between align-items-start gap-3">
+      <div>
+        <h2>{{ notice.title }}</h2>
+        {% if notice.important %}<span class="badge text-bg-warning">Pinned</span>{% endif %}
+      </div>
+      {% if user.profile.role == "admin" %}
+        <form method="post" action="{% url 'delete_notice' notice.id %}" onsubmit="return confirm('Delete this notice?');">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      {% endif %}
+    </div>
+    <p>{{ notice.body }}</p>
+    <small>{{ notice.created_at|date:"d M Y, h:i A" }}</small>
+  </article>
+{% empty %}
+  <p>No notices published.</p>
+{% endfor %}
+{% endblock %}

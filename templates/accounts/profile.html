@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="profile-layout">
+  <section class="panel">
+    <span class="eyebrow">{% if profile.role == "admin" %}Admin Section{% else %}My Profile{% endif %}</span>
+    <h1>{{ user.get_full_name|default:user.email }}</h1>
+    <p class="text-muted mb-1">{{ user.email }}</p>
+    <p><span class="badge text-bg-primary">{{ profile.get_role_display }}</span></p>
+  </section>
+  <section class="panel">
+    <h2>Account Actions</h2>
+    <div class="d-grid gap-2">
+      <a class="btn btn-outline-primary" href="{% url 'change_password' %}">Change Password</a>
+      <a class="btn btn-outline-danger" href="{% url 'logout' %}">Logout</a>
+    </div>
+  </section>
+</div>
+{% endblock %}

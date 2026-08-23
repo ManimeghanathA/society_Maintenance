@@ -1,0 +1,13 @@
+# System Design
+
+The application is built as a Django monolith because the project needs a complete working result quickly: authentication, forms, server-rendered pages, database models, file uploads, and email are all handled in one deployable service. Django’s built-in `User` model is used with `username=email`, so both admin and resident login with email ID and password. A separate `Profile` model stores the role, keeping authorization simple and explicit.
+
+Complaint tracking is centered on the `Complaint` and `ComplaintHistory` models. `Complaint` stores the current state: resident, category, description, optional image, status, priority, deadline, and timestamps. `ComplaintHistory` stores every meaningful status update with actor, old status, new status, timestamp, and optional note. Residents see this history from `My Complaints`, while admins update status, deadline, and priority from the admin complaint detail page. This separates current query-friendly state from the audit trail required by the brief.
+
+Overdue detection is computed from the complaint state rather than stored permanently. A complaint is overdue when it is not resolved and either its deadline is before today or, if no deadline exists, it has been open longer than the configured `OVERDUE_DAYS` threshold. Admin complaint lists sort overdue complaints to the top by default and also provide an overdue-only filter. This keeps overdue behavior configurable without needing scheduled jobs for the basic assignment version.
+
+Photo handling uses Django’s `ImageField`. Locally, files are stored in `media/`; in production, setting `CLOUDINARY_URL` switches media storage to Cloudinary using `django-cloudinary-storage`. This gives a free-tier hosted image path without building custom upload infrastructure. Complaint images are optional and displayed on the complaint detail page when present.
+
+Notifications use two layers. The `Notification` model stores in-app messages for residents, including complaint status updates and notices. Email is triggered for complaint status changes, account creation, and important notices. Email sending is wrapped so an SMTP failure does not block the main database action; the in-app notification still records the event. Local development uses Django’s console email backend by default, while production can use Gmail SMTP or Resend SMTP through environment variables.
+
+Admin account creation is handled with a `bootstrap_admin` management command. Admins can manually create residents, review pending resident create requests, publish notices, and manage complaints. Residents can request an account if their email is unknown during login, change their password, raise complaints, view notices, and track their own complaint history.

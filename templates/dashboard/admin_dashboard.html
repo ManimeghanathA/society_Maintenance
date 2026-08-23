@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Admin Dashboard</h1>
+<div class="metric-grid">
+  <div class="metric"><span>Total Complaints</span><strong>{{ total }}</strong></div>
+  <div class="metric"><span>Overdue</span><strong>{{ overdue_count }}</strong></div>
+  <div class="metric"><span>Pending Requests</span><strong>{{ pending_requests }}</strong></div>
+</div>
+<div class="row g-3 mt-2">
+  <div class="col-md-4"><div class="panel"><h2>Status</h2>{% for row in status_counts %}<p>{{ row.status }}: <b>{{ row.total }}</b></p>{% empty %}<p>No data.</p>{% endfor %}</div></div>
+  <div class="col-md-4"><div class="panel"><h2>Category</h2>{% for row in category_counts %}<p>{{ row.category }}: <b>{{ row.total }}</b></p>{% empty %}<p>No data.</p>{% endfor %}</div></div>
+  <div class="col-md-4"><div class="panel"><h2>Priority</h2>{% for row in priority_counts %}<p>{{ row.priority }}: <b>{{ row.total }}</b></p>{% empty %}<p>No data.</p>{% endfor %}</div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-shell">
+  <div class="login-intro">
+    <span class="eyebrow">Society Maintenance Tracker</span>
+    <h1>Welcome back</h1>
+    <p>Choose the correct login section for your role. Residents can request account creation if their email is not registered.</p>
+  </div>
+  <div class="login-grid">
+    <section class="auth-panel role-card">
+      <div class="role-badge admin-badge">Admin</div>
+      <h2>Admin Login</h2>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="role" value="admin">
+        {{ form.as_p }}
+        <button class="btn btn-primary w-100">Login as Admin</button>
+      </form>
+    </section>
+    <section class="auth-panel role-card">
+      <div class="role-badge resident-badge">Resident</div>
+      <h2>Resident Login</h2>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="role" value="resident">
+        {{ form.as_p }}
+        <button class="btn btn-success w-100">Login as Resident</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Residents</h1>
+  <a class="btn btn-primary" href="{% url 'create_resident' %}">Create Resident</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Complaints</th></tr></thead>
+    <tbody>
+      {% for resident in residents %}
+      <tr>
+        <td>{{ resident.get_full_name|default:resident.email }}</td>
+        <td>{{ resident.email }}</td>
+        <td>{{ resident.profile.phone|default:"-" }}</td>
+        <td>{{ resident.complaints.count }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No residents yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
