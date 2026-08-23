@@ -28,6 +28,7 @@ Do not upload or share `.env`. It contains passwords and API keys.
 | `.env` | Your real local secrets. Never commit this. |
 | `.env.example` | Example env file for documentation. Safe to commit. |
 | `requirements.txt` | Python packages Render installs. |
+| `runtime.txt` | Pins Render to Python 3.12 so PostgreSQL dependencies install correctly. |
 | `render.yaml` | Optional Render Blueprint config. |
 | `manage.py` | Django command runner. |
 | `society_tracker/settings.py` | Reads env variables and configures database, email, Cloudinary, and static files. |
@@ -293,6 +294,14 @@ git push -u origin main
 ## 12. Deploy The Whole Application On Render
 
 If you already created PostgreSQL, create only the web application.
+
+This project includes `runtime.txt`:
+
+```text
+python-3.12.13
+```
+
+Render must use Python 3.12. Do not let Render build with Python 3.14, because `psycopg2-binary==2.9.9` can fail on Python 3.14 during PostgreSQL setup.
 
 Manual Web Service steps:
 
