@@ -28,7 +28,8 @@ Do not upload or share `.env`. It contains passwords and API keys.
 | `.env` | Your real local secrets. Never commit this. |
 | `.env.example` | Example env file for documentation. Safe to commit. |
 | `requirements.txt` | Python packages Render installs. |
-| `runtime.txt` | Pins Render to Python 3.12 so PostgreSQL dependencies install correctly. |
+| `.python-version` | Pins Render to Python 3.12 so PostgreSQL dependencies install correctly. |
+| `runtime.txt` | Legacy Python runtime pin kept for compatibility. |
 | `render.yaml` | Optional Render Blueprint config. |
 | `manage.py` | Django command runner. |
 | `society_tracker/settings.py` | Reads env variables and configures database, email, Cloudinary, and static files. |
@@ -295,13 +296,25 @@ git push -u origin main
 
 If you already created PostgreSQL, create only the web application.
 
-This project includes `runtime.txt`:
+This project includes `.python-version`:
+
+```text
+3.12.13
+```
+
+It also keeps `runtime.txt` for compatibility:
 
 ```text
 python-3.12.13
 ```
 
 Render must use Python 3.12. Do not let Render build with Python 3.14, because `psycopg2-binary==2.9.9` can fail on Python 3.14 during PostgreSQL setup.
+
+If the deploy log still says `Using Python version 3.14.3 (default)`, set this environment variable manually in Render Web Service settings:
+
+```env
+PYTHON_VERSION=3.12.13
+```
 
 Manual Web Service steps:
 
@@ -333,6 +346,7 @@ In Render Web Service, add:
 
 ```env
 SECRET_KEY=your-real-django-secret-key
+PYTHON_VERSION=3.12.13
 DEBUG=False
 ALLOWED_HOSTS=your-service-name.onrender.com,.onrender.com
 DATABASE_URL=your-render-internal-database-url
