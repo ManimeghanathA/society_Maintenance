@@ -15,9 +15,16 @@
         <td><a class="btn btn-sm btn-outline-primary" href="{% url 'complaint_detail' complaint.id %}">Open</a></td>
       </tr>
       {% empty %}
-      <tr><td colspan="6">You have not raised any complaints yet.</td></tr>
+      <tr><td colspan="6"><div class="empty-state">You have not raised any complaints yet. Use Raise Complaint to submit your first issue.</div></td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% if complaints.has_other_pages %}
+<nav class="pager">
+  {% if complaints.has_previous %}<a class="btn btn-outline-primary btn-sm" href="?page={{ complaints.previous_page_number }}">Previous</a>{% endif %}
+  <span>Page {{ complaints.number }} of {{ complaints.paginator.num_pages }}</span>
+  {% if complaints.has_next %}<a class="btn btn-outline-primary btn-sm" href="?page={{ complaints.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
 {% endblock %}

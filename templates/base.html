@@ -25,7 +25,7 @@
             <a class="nav-link" href="{% url 'registration_requests' %}">Create Requests</a>
             <a class="nav-link notification-link" href="{% url 'notifications' %}">
               Notifications
-              {% with note_count=user.notifications.count %}
+              {% with note_count=user.notifications.unread_count %}
                 {% if note_count %}<span class="nav-badge">{{ note_count }}</span>{% endif %}
               {% endwith %}
             </a>
@@ -46,7 +46,7 @@
           {% if user.profile.role != "admin" %}
             <a class="nav-link notification-link" href="{% url 'notifications' %}">
               Notifications
-              {% with note_count=user.notifications.count %}
+              {% with note_count=user.notifications.unread_count %}
                 {% if note_count %}<span class="nav-badge">{{ note_count }}</span>{% endif %}
               {% endwith %}
             </a>

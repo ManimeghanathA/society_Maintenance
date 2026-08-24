@@ -4,6 +4,23 @@
 <form method="post" enctype="multipart/form-data" class="form-panel">
   {% csrf_token %}
   {{ form.as_p }}
+  <img id="imagePreview" class="image-preview d-none" alt="Selected complaint image preview">
   <button class="btn btn-primary">Submit complaint</button>
 </form>
+<script>
+  const imageInput = document.querySelector('input[type="file"][name="image"]');
+  const preview = document.getElementById("imagePreview");
+  if (imageInput && preview) {
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files[0];
+      if (!file) {
+        preview.classList.add("d-none");
+        preview.removeAttribute("src");
+        return;
+      }
+      preview.src = URL.createObjectURL(file);
+      preview.classList.remove("d-none");
+    });
+  }
+</script>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from accounts.models import Profile
 from notices.models import Notification
@@ -36,3 +37,34 @@ class ComplaintFlowTests(TestCase):
         self.assertEqual(complaint.status, Complaint.IN_PROGRESS)
         self.assertTrue(ComplaintHistory.objects.filter(complaint=complaint, note="Assigned to electrician").exists())
         self.assertTrue(Notification.objects.filter(user=self.resident, message__icontains=complaint.code).exists())
+
+    def test_resident_cannot_view_another_residents_complaint(self):
+        complaint = Complaint.objects.create(resident=self.other, category="Security", description="Gate issue")
+        self.client.login(username="resident@example.com", password="residentpass")
+        response = self.client.get(reverse("complaint_detail", args=[complaint.id]))
+        self.assertRedirects(response, reverse("my_complaints"))
+
+    def test_resident_can_create_complaint_without_image(self):
+        self.client.login(username="resident@example.com", password="residentpass")
+        response = self.client.post(reverse("create_complaint"), {"category": "Plumbing", "description": "Water leak"})
+        self.assertRedirects(response, reverse("my_complaints"))
+        complaint = Complaint.objects.get(description="Water leak")
+        self.assertEqual(complaint.status, Complaint.OPEN)
+        self.assertTrue(ComplaintHistory.objects.filter(complaint=complaint, note="Complaint raised").exists())
+
+    def test_overdue_calculation_uses_deadline(self):
+        complaint = Complaint.objects.create(
+            resident=self.resident,
+            category="Cleaning",
+            description="Missed cleaning",
+            deadline=timezone.localdate() - timezone.timedelta(days=1),
+        )
+        self.assertTrue(complaint.is_overdue)
+
+    def test_export_filtered_complaints_csv(self):
+        Complaint.objects.create(resident=self.resident, category="Lift", description="Lift noise")
+        self.client.login(username="admin@example.com", password="adminpass")
+        response = self.client.get(reverse("admin_complaints"), {"export": "csv", "category": "Lift"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertIn("Lift", response.content.decode())

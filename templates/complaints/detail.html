@@ -17,8 +17,8 @@
     <div class="panel mt-3">
       <h2>Status History</h2>
       {% for item in complaint.history.all %}
-        <div class="history-item">
-          <b>{{ item.get_new_status_display|default:item.new_status }}</b>
+        <div class="history-item timeline-item">
+          <b>{{ item.new_status|title }}</b>
           <span>{{ item.timestamp|date:"d M Y, h:i A" }}</span>
           {% if item.note %}<p>{{ item.note }}</p>{% endif %}
         </div>

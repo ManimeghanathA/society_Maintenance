@@ -30,7 +30,6 @@ class RegistrationRequest(models.Model):
 
     name = models.CharField(max_length=150)
     email = models.EmailField()
-    requested_password = models.CharField(max_length=128)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
     reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reviewed_requests")

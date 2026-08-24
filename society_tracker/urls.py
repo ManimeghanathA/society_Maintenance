@@ -31,6 +31,7 @@ urlpatterns = [
     path("login/", account_views.login_view, name="login"),
     path("logout/", account_views.logout_view, name="logout"),
     path("request-account/", account_views.registration_request_view, name="registration_request"),
+    path("password-setup/<uidb64>/<token>/", account_views.password_setup, name="password_setup"),
     path("profile/", account_views.profile_view, name="profile"),
     path("change-password/", account_views.change_password, name="change_password"),
     path("admin-dashboard/", dashboard_views.admin_dashboard, name="admin_dashboard"),

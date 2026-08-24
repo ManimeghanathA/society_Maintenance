@@ -72,10 +72,14 @@ Final local `.env` should look like this:
 
 ```env
 SECRET_KEY=your-real-django-secret-key
+PYTHON_VERSION=3.12.13
 DEBUG=True
 ALLOWED_HOSTS=127.0.0.1,localhost
+CSRF_TRUSTED_ORIGINS=
 DATABASE_URL=your-render-postgres-external-url
 OVERDUE_DAYS=4
+MAX_UPLOAD_SIZE=2097152
+ALLOWED_IMAGE_TYPES=image/jpeg,image/png,image/webp
 CLOUDINARY_URL=cloudinary://your_api_key:your_api_secret@your_cloud_name
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 EMAIL_HOST=smtp.gmail.com
@@ -349,8 +353,11 @@ SECRET_KEY=your-real-django-secret-key
 PYTHON_VERSION=3.12.13
 DEBUG=False
 ALLOWED_HOSTS=your-service-name.onrender.com,.onrender.com
+CSRF_TRUSTED_ORIGINS=https://your-service-name.onrender.com
 DATABASE_URL=your-render-internal-database-url
 OVERDUE_DAYS=4
+MAX_UPLOAD_SIZE=2097152
+ALLOWED_IMAGE_TYPES=image/jpeg,image/png,image/webp
 CLOUDINARY_URL=cloudinary://your_api_key:your_api_secret@your_cloud_name
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 EMAIL_HOST=smtp.gmail.com
@@ -472,7 +479,7 @@ Fix: set `CLOUDINARY_URL` in Render environment variables.
 - Use Gmail App Password, not normal Gmail password.
 - Render PostgreSQL credentials should stay private.
 - Cloudinary API secret should stay private.
-- The assignment workflow stores requested passwords in `RegistrationRequest`. This is acceptable for the requested demo workflow, but production systems should use invite links or password reset links instead.
+- Registration requests never store resident-selected passwords. Approval sends a private one-time password setup link.
 - Email failures are non-blocking in the app; database records and in-app notifications still get created.
 
 ## 18. Final Submission Items

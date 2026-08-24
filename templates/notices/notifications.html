@@ -10,6 +10,13 @@
     <small class="d-block text-muted">{{ item.created_at|date:"d M Y, h:i A" }}</small>
   </div>
 {% empty %}
-  <p>No notifications.</p>
+  <div class="empty-state panel">No notifications yet.</div>
 {% endfor %}
+{% if notifications.has_other_pages %}
+<nav class="pager">
+  {% if notifications.has_previous %}<a class="btn btn-outline-primary btn-sm" href="?page={{ notifications.previous_page_number }}">Previous</a>{% endif %}
+  <span>Page {{ notifications.number }} of {{ notifications.paginator.num_pages }}</span>
+  {% if notifications.has_next %}<a class="btn btn-outline-primary btn-sm" href="?page={{ notifications.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
 {% endblock %}

@@ -28,9 +28,9 @@ Login uses email ID and password. The login page has separate Admin Login and Re
 - Email ID used as the login user ID.
 - Role-based access control for admin and resident pages.
 - Admin can create users as either admin or resident.
-- Resident can request account creation if their email is not found during login.
+- Resident can request account creation with name and email if their email is not found during login.
 - Admin can approve or reject resident create requests.
-- Account-created email hook after admin creates or approves a user.
+- Approval creates a resident with no usable password and emails a one-time password setup link.
 - Resident can change password from My Profile.
 - Admin can change password from Admin menu.
 - Admin dashboard with complaint totals and overdue counts.
@@ -57,6 +57,9 @@ Login uses email ID and password. The login page has separate Admin Login and Re
 - PostgreSQL-ready deployment through `DATABASE_URL`.
 - Cloudinary-ready image upload through `CLOUDINARY_URL`.
 - Render-ready deployment using `render.yaml`.
+- Production security settings for secure cookies, HTTPS redirect, Render proxy headers, trusted origins, and upload validation.
+- Pagination, image preview, CSV export, unread notification counter, timeline view, and dashboard charts.
+- GitHub Actions CI for checks and tests on pushes and pull requests.
 
 ## 3. Tech Stack
 
@@ -172,17 +175,15 @@ Login uses email ID and password. The login page has separate Admin Login and Re
 
 1. New resident tries to log in through Resident Login.
 2. If the email is not found, the app redirects to Send Create Request.
-3. The form is prefilled with the attempted email and password.
-4. Resident can edit name, email, and requested password.
+3. The form is prefilled with the attempted email.
+4. Resident can edit name and email.
 5. Resident submits the request.
 6. System creates a `RegistrationRequest` with status Pending.
 7. Admin opens Create Requests.
-8. Admin reviews the name, email, and requested password.
+8. Admin reviews the name and email.
 9. Admin clicks Create or Reject.
-10. If Create, the system creates a resident user, stores the role in `Profile`, marks the request Approved, and sends the account-created email hook.
+10. If Create, the system creates a resident user with an unusable password, stores the role in `Profile`, marks the request Approved, and sends a one-time password setup link.
 11. If Reject, the system marks the request Rejected.
-
-Important: storing requested passwords is implemented because the assignment workflow asked for it. A real production system should use invitation links or password reset links instead.
 
 ## 9. Complaint Status/History Dataflow
 

@@ -2,6 +2,11 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+class NotificationQuerySet(models.QuerySet):
+    def unread_count(self):
+        return self.filter(read=False).count()
+
+
 class Notice(models.Model):
     title = models.CharField(max_length=200)
     body = models.TextField()
@@ -17,6 +22,8 @@ class Notice(models.Model):
 
 
 class Notification(models.Model):
+    objects = NotificationQuerySet.as_manager()
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     message = models.CharField(max_length=255)
     link = models.CharField(max_length=255, blank=True)

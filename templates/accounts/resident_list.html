@@ -16,9 +16,16 @@
         <td>{{ resident.complaints.count }}</td>
       </tr>
       {% empty %}
-      <tr><td colspan="4">No residents yet.</td></tr>
+      <tr><td colspan="4"><div class="empty-state">No residents yet. Create a resident from the Admin menu.</div></td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% if residents.has_other_pages %}
+<nav class="pager">
+  {% if residents.has_previous %}<a class="btn btn-outline-primary btn-sm" href="?page={{ residents.previous_page_number }}">Previous</a>{% endif %}
+  <span>Page {{ residents.number }} of {{ residents.paginator.num_pages }}</span>
+  {% if residents.has_next %}<a class="btn btn-outline-primary btn-sm" href="?page={{ residents.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
 {% endblock %}

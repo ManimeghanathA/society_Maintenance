@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.decorators import role_required
@@ -47,8 +48,9 @@ def delete_notice(request, pk):
 
 @login_required
 def notifications(request):
-    notes = request.user.notifications.all()
+    notes_qs = request.user.notifications.all()
     if request.method == "POST":
-        notes.update(read=True)
+        notes_qs.update(read=True)
         return redirect("notifications")
+    notes = Paginator(notes_qs, 10).get_page(request.GET.get("page"))
     return render(request, "notices/notifications.html", {"notifications": notes})

@@ -3,25 +3,31 @@
 <h1>Registration Requests</h1>
 <div class="table-responsive">
   <table class="table table-hover align-middle">
-    <thead><tr><th>Name</th><th>Email</th><th>Requested Password</th><th>Status</th><th>Action</th></tr></thead>
+    <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr></thead>
     <tbody>
       {% for item in requests %}
       <tr>
         <td>{{ item.name }}</td>
         <td>{{ item.email }}</td>
-        <td><code>{{ item.requested_password }}</code></td>
         <td><span class="badge text-bg-secondary">{{ item.get_status_display }}</span></td>
         <td>
           {% if item.status == "pending" %}
-            <a class="btn btn-sm btn-success" href="{% url 'review_registration_request' item.id 'approve' %}">Create</a>
-            <a class="btn btn-sm btn-outline-danger" href="{% url 'review_registration_request' item.id 'reject' %}">Reject</a>
+            <a class="btn btn-sm btn-success" onclick="return confirm('Approve this request and send a password setup link?');" href="{% url 'review_registration_request' item.id 'approve' %}">Create</a>
+            <a class="btn btn-sm btn-outline-danger" onclick="return confirm('Reject this request?');" href="{% url 'review_registration_request' item.id 'reject' %}">Reject</a>
           {% else %}-{% endif %}
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="5">No requests.</td></tr>
+      <tr><td colspan="4">No requests.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% if requests.has_other_pages %}
+<nav class="pager">
+  {% if requests.has_previous %}<a class="btn btn-outline-primary btn-sm" href="?page={{ requests.previous_page_number }}">Previous</a>{% endif %}
+  <span>Page {{ requests.number }} of {{ requests.paginator.num_pages }}</span>
+  {% if requests.has_next %}<a class="btn btn-outline-primary btn-sm" href="?page={{ requests.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
 {% endblock %}

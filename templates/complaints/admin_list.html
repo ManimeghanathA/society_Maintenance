@@ -25,6 +25,7 @@
     <option value="old" {% if request.GET.sort == "old" %}selected{% endif %}>Old complaints</option>
   </select>
   <button class="btn btn-primary">Apply</button>
+  <button class="btn btn-outline-primary" name="export" value="csv">Export CSV</button>
 </form>
 <div class="table-responsive">
   <table class="table table-hover align-middle">
@@ -42,8 +43,15 @@
       </tr>
       {% empty %}
       <tr><td colspan="7">No complaints match the filters.</td></tr>
-      {% endfor %}
+{% endfor %}
     </tbody>
   </table>
 </div>
+{% if complaints.has_other_pages %}
+<nav class="pager">
+  {% if complaints.has_previous %}<a class="btn btn-outline-primary btn-sm" href="?page={{ complaints.previous_page_number }}">Previous</a>{% endif %}
+  <span>Page {{ complaints.number }} of {{ complaints.paginator.num_pages }}</span>
+  {% if complaints.has_next %}<a class="btn btn-outline-primary btn-sm" href="?page={{ complaints.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
 {% endblock %}

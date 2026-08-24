@@ -1,6 +1,10 @@
+import csv
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Case, IntegerField, Q, Value, When
+from django.core.paginator import Paginator
+from django.db.models import Avg, DurationField, ExpressionWrapper, F, Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -44,7 +48,8 @@ def create_complaint(request):
 
 @role_required(Profile.RESIDENT)
 def my_complaints(request):
-    complaints = request.user.complaints.all()
+    paginator = Paginator(request.user.complaints.all(), 10)
+    complaints = paginator.get_page(request.GET.get("page"))
     return render(request, "complaints/my_complaints.html", {"complaints": complaints})
 
 
@@ -102,7 +107,28 @@ def admin_complaints(request):
     else:
         complaints.sort(key=lambda item: (not item.is_overdue, item.deadline or timezone.localdate(), -item.created_at.timestamp()))
 
-    return render(request, "complaints/admin_list.html", {"complaints": complaints, "categories": Complaint.CATEGORY_CHOICES, "statuses": Complaint.STATUS_CHOICES})
+    if request.GET.get("export") == "csv":
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="complaints.csv"'
+        writer = csv.writer(response)
+        writer.writerow(["ID", "Resident", "Email", "Category", "Status", "Priority", "Deadline", "Created", "Overdue"])
+        for complaint in complaints:
+            writer.writerow([
+                complaint.code,
+                complaint.resident.get_full_name() or complaint.resident.email,
+                complaint.resident.email,
+                complaint.category,
+                complaint.get_status_display(),
+                complaint.get_priority_display(),
+                complaint.deadline or "",
+                complaint.created_at,
+                "Yes" if complaint.is_overdue else "No",
+            ])
+        return response
+
+    paginator = Paginator(complaints, 10)
+    complaints_page = paginator.get_page(request.GET.get("page"))
+    return render(request, "complaints/admin_list.html", {"complaints": complaints_page, "categories": Complaint.CATEGORY_CHOICES, "statuses": Complaint.STATUS_CHOICES})
 
 
 @role_required(Profile.ADMIN)

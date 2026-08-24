@@ -2,7 +2,7 @@
 {% block content %}
 <div class="auth-panel mx-auto">
   <h1>Send Create Request</h1>
-  <p class="text-muted">Review or change the details before sending them to admin.</p>
+  <p class="text-muted">Send your name and email to admin. If approved, you will receive a private one-time password setup link.</p>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
